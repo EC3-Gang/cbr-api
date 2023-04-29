@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
+import fastifyAllow from 'fastify-allow';
 import fs from 'fs/promises';
 const fileUrl = new URL('../package.json', import.meta.url);
 const { version } = JSON.parse(await fs.readFile(fileUrl));
@@ -9,6 +10,8 @@ const { version } = JSON.parse(await fs.readFile(fileUrl));
 const fastify = Fastify({
 	logger: true,
 });
+
+await fastify.register(fastifyAllow);
 
 await fastify.register(fastifySwagger, {
 	exposeRoute: true,

@@ -2,9 +2,12 @@ import Fastify from 'fastify';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import fastifyAllow from 'fastify-allow';
+import * as dotenv from 'dotenv';
 import fs from 'fs/promises';
 const fileUrl = new URL('../package.json', import.meta.url);
 const { version } = JSON.parse(await fs.readFile(fileUrl));
+
+dotenv.config();
 
 
 const fastify = Fastify({
@@ -45,9 +48,9 @@ for (const file of files) {
 
 const start = async () => {
 	try {
-		await fastify.listen({
-			port: 3000,
-			host: '0.0.0.0',
+		fastify.listen({
+			port: process.env.PORT || 3000,
+			host: process.env.HOST || '0.0.0.0',
 		});
 	}
 	catch (err) {

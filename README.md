@@ -38,7 +38,6 @@ Visit the root url to find out more about the endpoints.
 - [ ] Add an endpoint to get recent submissions
 - [ ] Add an endpoint to get recent submissions of a user
 - [ ] Add an endpoint to get recent submissions of a user in a specific challenge
-- [ ] Add an endpoint to get all problems
+- [x] Add an endpoint to get all problems
 - [x] Add an endpoint to get a problem
-- [ ] Add an endpoint to get a specific problem (likely not possible)
-- [ ] Add an endpoint to get all users (also likely not possible)
+- [ ] Add an endpoint to get all users (also likely not possible since rankins doesn't show everyone)

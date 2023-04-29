@@ -65,7 +65,9 @@ export default async function(fastify, opts, done) {
 		const solvedProblems = [];
 		const problemsTable = document.querySelector('body > div.container-fluid.p-4 > div > div.col-sm-7 > table > tbody');
 		for (const row of problemsTable.rows) {
-			solvedProblems.push(row.cells[0].textContent.trim());
+			for (const cell of row.cells) {
+				solvedProblems.push(cell.textContent.trim());
+			}
 		}
 
 		reply.send({
@@ -73,7 +75,7 @@ export default async function(fastify, opts, done) {
 			school: capitalise(school, true),
 			role: capitalise(role),
 			country: capitalise(country, true),
-			solvedProblems,
+			solvedProblems: solvedProblems.filter((problem) => problem !== ''),
 		});
 	});
 	done();

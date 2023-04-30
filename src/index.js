@@ -13,7 +13,14 @@ dotenv.config();
 
 
 const fastify = Fastify({
-	logger: true,
+	logger: {
+		transport: {
+			target: 'pino-pretty',
+			options: {
+				translateTime: 'SYS:HH:MM:ss Z',
+			},
+		},
+	},
 });
 
 await fastify.register(fastifyAllow);

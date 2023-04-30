@@ -12,7 +12,8 @@
     "fastify": "^4.17.0",
     "fastify-allow": "^1.2.2",
     "got": "^12.6.0",
-    "jsdom": "^21.1.1"
+    "jsdom": "^21.1.1",
+    "pino-pretty": "^10.0.0"
   },
   "devDependencies": {
     "eslint": "^8.39.0",

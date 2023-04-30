@@ -88,8 +88,6 @@ export default function(fastify, opts, done) {
 			});
 		}
 
-		console.log(problems);
-
 		reply.send({
 			contestId,
 			name,

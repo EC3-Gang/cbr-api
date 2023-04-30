@@ -1,6 +1,6 @@
 import got from 'got';
 import { JSDOM } from 'jsdom';
-import capitalise from '../utils/capitalise.js';
+import capitalise from '../../utils/capitalise.js';
 
 const schema = {
 	description: 'Get a user',

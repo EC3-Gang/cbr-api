@@ -16,6 +16,10 @@ const schema = {
 						type: 'string',
 						description: 'Name of the contest',
 					},
+					id: {
+						type: 'string',
+						description: 'ID of the contest',
+					},
 					start: {
 						type: 'string',
 						description: 'Start time of the contest',
@@ -60,12 +64,14 @@ export default function(fastify, opts, done) {
 			for (let j = 0; j < contest.length; j++) {
 				const contestInfo = contest[j].children;
 				const contestName = contestInfo[0].textContent.trim();
+				const contestId = contestInfo[0].querySelector('a').href.split('/')[4];
 				const contestStart = contestInfo[1].textContent.trim();
 				const contestEnd = contestInfo[2].textContent.trim();
 				const contestDuration = contestInfo[3].textContent.trim();
 
 				contests.push({
 					name: contestName,
+					id: contestId,
 					start: contestStart,
 					end: contestEnd,
 					duration: (

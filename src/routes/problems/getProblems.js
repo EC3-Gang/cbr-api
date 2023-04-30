@@ -12,7 +12,7 @@ const schema = {
 			items: {
 				type: 'object',
 				properties: {
-					problemid: {
+					problemId: {
 						type: 'string',
 						description: 'ID of the problem',
 					},
@@ -65,7 +65,7 @@ export default async function(fastify, opts, done) {
 			const acs = parseInt(row.cells[5].textContent.trim());
 
 			problems.push({
-				problemid,
+				problemId: problemid,
 				title,
 				source,
 				type,

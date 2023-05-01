@@ -12,3 +12,7 @@
 
 node_modules
 nohup.out
+
+.idea
+
+./yarn.lock

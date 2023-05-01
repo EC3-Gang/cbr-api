@@ -15,4 +15,4 @@ nohup.out
 
 .idea
 
-./yarn.lock
+yarn.lock

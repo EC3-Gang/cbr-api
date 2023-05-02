@@ -26,10 +26,10 @@
   "scripts": {
     "dev-js": "nodemon src/index.js",
 		"dev-go": "cd go-fetch-subs/ && go run main.go",
-		"dev": "conc \"yarn:dev-*\"",
+		"dev": "conc \"yarn:dev-*\" -c bgMagenta,bgBlue -p \" {command} \" -l 25",
     "lint": "eslint .",
     "start-js": "node src/index.js",
 		"start-go": "cd go-fetch-subs/ && go build -o go-fetch-subs && ./go-fetch-subs",
-		"start": "conc \"yarn:start-*\""
+		"start": "conc \"yarn:start-*\" -c bgMagenta,bgBlue -p \" {command} \" -l 25"
   }
 }

@@ -2,7 +2,7 @@ import got from 'got';
 import { JSDOM } from 'jsdom';
 
 const schema = {
-	description: 'Gets all submissions for a problem',
+	description: 'Gets all submissions for a problem (takes a while on questions with more subs)',
 	tags: ['submissions'],
 	summary: 'Gets all submissions for a problem',
 	// optional querystring (problem id)

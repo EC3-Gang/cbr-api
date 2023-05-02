@@ -44,7 +44,7 @@ func getPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg 
 	//	//retChan <- []Attempt{}
 	//}
 
-	var attempts []Attempt
+	//var attempts []Attempt
 
 	doc.Find(".table tbody tr").Each(func(i int, s *goquery.Selection) {
 		attempt := Attempt{}
@@ -107,10 +107,8 @@ func getPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg 
 				attempt.MaxMemory = maxMemory
 			}
 		})
-		attempts = append(attempts, attempt)
+		*currentAttempts = append(*currentAttempts, attempt)
 	})
-
-	*currentAttempts = append(*currentAttempts, attempts...)
 	wg.Done()
 }
 

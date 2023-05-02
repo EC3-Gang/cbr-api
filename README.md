@@ -4,8 +4,8 @@ An unofficial codebreaker.xyz API that is basically a wrapper that scrapes the w
 All API endpoints only accept GET requests.
 
 ## Credits
-simonfalke (ryo simp)
-Canaris
+- [simonfalke (ryo simp)](https://github.com/simonfalke-01) for the idea and go part
+- [Canaris](https://github.com/DET171) did most the code though
 
 ## Usage
 

@@ -159,8 +159,8 @@ func getAttempts(problemID string) ([]Attempt, error) {
 		return nil, fmt.Errorf("failed to get last non-blank page: %w", err)
 	}
 
-	if totalPages > 50 {
-		totalPages = 50
+	if totalPages > 30 {
+		totalPages = 30
 	}
 
 	var wg sync.WaitGroup

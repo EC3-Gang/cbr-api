@@ -7,9 +7,9 @@ const schema = {
 	summary: 'Get a problem',
 	querystring: {
 		type: 'object',
-		required: ['problemid'],
+		required: ['problemId'],
 		properties: {
-			problemid: {
+			problemId: {
 				type: 'string',
 				description: 'ID of the problem',
 			},
@@ -20,7 +20,7 @@ const schema = {
 			description: 'Successful response',
 			type: 'object',
 			properties: {
-				problemid: {
+				problemId: {
 					type: 'string',
 					description: 'ID of the problem',
 				},
@@ -74,7 +74,7 @@ export default async function(fastify, opts, done) {
 	fastify.get('/getProblem', {
 		schema,
 	}, async (request, reply) => {
-		const queryproblemid = request.query.problemid;
+		const queryproblemid = request.query.problemId;
 		const res = await got(`https://codebreaker.xyz/problem/${queryproblemid}`);
 		const { document } = (new JSDOM(res.body)).window;
 
@@ -117,7 +117,7 @@ export default async function(fastify, opts, done) {
 
 
 		const problem = {
-			problemid: queryproblemid,
+			problemId: queryproblemid,
 			title: document.querySelector('#statement > h3 > b').textContent.trim(),
 			statement,
 			timeLimit,

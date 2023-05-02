@@ -7,6 +7,24 @@ All API endpoints only accept GET requests.
 - [simonfalke (ryo simp)](https://github.com/simonfalke-01) for the idea and go part
 - [Canaris](https://github.com/DET171) did most the code though (no you did not my go code is longer than your js) (that's cap)
 
+##### As of 384228c
+```
+───────────────────────────────────────────────────────────────────────────────
+Language                 Files     Lines   Blanks  Comments     Code Complexity
+───────────────────────────────────────────────────────────────────────────────
+JavaScript                   9       729       54        42      633         28
+JSON                         2        50        0         0       50          0
+gitignore                    2        20        4         3       13          0
+Go                           1       200       20        10      170         41
+License                      1         8        4         0        4          0
+Markdown                     1        37        8         0       29          0
+YAML                         1         1        0         0        1          0
+───────────────────────────────────────────────────────────────────────────────
+Total                       17      1045       90        55      900         69
+───────────────────────────────────────────────────────────────────────────────
+```
+
+
 ## Usage
 
 ### Installation

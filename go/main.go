@@ -156,6 +156,7 @@ func getLastNonBlankPage(problemID string, start, end int) (int, error) {
 func getAttempts(problemID string) ([]Attempt, error) {
 	var attempts []Attempt
 	totalPages, err := getLastNonBlankPage(problemID, 1, 200)
+	fmt.Println(totalPages)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get last non-blank page: %w", err)
 	}

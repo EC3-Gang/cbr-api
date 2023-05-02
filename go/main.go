@@ -107,7 +107,7 @@ func getPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg 
 				attempt.MaxMemory = maxMemory
 			}
 		})
-		//fmt.Println(attempt)
+		fmt.Println(attempt)
 		*currentAttempts = append(*currentAttempts, attempt)
 	})
 	wg.Done()

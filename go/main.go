@@ -161,7 +161,7 @@ func getAttempts(problemID string) ([]Attempt, error) {
 
 	var wg sync.WaitGroup
 	wg.Add(totalPages)
-	for i := 1; i < totalPages; i++ {
+	for i := 1; i <= totalPages; i++ {
 		go getPageAttempts(i, problemID, &attempts, &wg)
 	}
 	// Wait for all goroutines to finish

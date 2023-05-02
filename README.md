@@ -5,7 +5,7 @@ All API endpoints only accept GET requests.
 
 ## Credits
 - [simonfalke (ryo simp)](https://github.com/simonfalke-01) for the idea and go part
-- [Canaris](https://github.com/DET171) did most the code though
+- [Canaris](https://github.com/DET171) did most the code though (no you did not my go code is longer than your js)
 
 ## Usage
 

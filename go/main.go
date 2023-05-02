@@ -107,7 +107,6 @@ func getPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg 
 				attempt.MaxMemory = maxMemory
 			}
 		})
-		fmt.Println(attempt)
 		*currentAttempts = append(*currentAttempts, attempt)
 	})
 	wg.Done()
@@ -156,14 +155,13 @@ func getLastNonBlankPage(problemID string, start, end int) (int, error) {
 func getAttempts(problemID string) ([]Attempt, error) {
 	var attempts []Attempt
 	totalPages, err := getLastNonBlankPage(problemID, 1, 200)
-	fmt.Println(totalPages)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get last non-blank page: %w", err)
 	}
 
 	var wg sync.WaitGroup
 	wg.Add(totalPages)
-	for i := 0; i < totalPages; i++ {
+	for i := 1; i < totalPages; i++ {
 		go getPageAttempts(i, problemID, &attempts, &wg)
 	}
 	// Wait for all goroutines to finish

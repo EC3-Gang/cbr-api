@@ -25,6 +25,38 @@ Total                       17      1045       90        55      900         69
 ```
 
 
+## API Endpoints
+### Problems
+#### `/api/getProblem`
+##### Parameters
+- `problemid`: `string` (required)
+
+#### `/api/getProblems`
+##### Parameters
+- No parameters
+
+### Submissions
+#### `/api/getSubmissions`
+##### Parameters
+- `problemid`: `string` (required)
+- `ac`: `bool` (default: false)
+
+### Users
+#### `/api/getUser`
+##### Parameters
+- `name`: `string` (required)
+
+### Contests
+#### `/api/getContest`
+##### Parameters
+- `contestid`: `string` (required)
+
+#### `/api/getContests`
+##### Parameters
+- No parameters
+
+
+
 ## Usage
 
 ### Installation

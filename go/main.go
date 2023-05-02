@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -30,21 +31,20 @@ func processString(s string) string {
 	return s
 }
 
-func getPageAttempts(page int, problemID string, retChan chan []Attempt, errChan chan error, doneChan chan int) {
+func getPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg *sync.WaitGroup) {
 	url := fmt.Sprintf("https://codebreaker.xyz/submissions?problem=%s&page=%d", problemID, page)
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
-		errChan <- fmt.Errorf("failed to get page attempts: %w", err)
+		//errChan <- fmt.Errorf("failed to get page attempts: %w", err)
 		return
 	}
 
 	// Check if there are no attempts on this page
-	if doc.Find(".table tbody tr").Length() == 0 {
-		doneChan <- page
-		return
-	}
+	//if doc.Find(".table tbody tr").Length() == 0 {
+	//	//retChan <- []Attempt{}
+	//}
 
-	var attempts []Attempt
+	//var attempts []Attempt
 
 	doc.Find(".table tbody tr").Each(func(i int, s *goquery.Selection) {
 		attempt := Attempt{}
@@ -107,48 +107,67 @@ func getPageAttempts(page int, problemID string, retChan chan []Attempt, errChan
 				attempt.MaxMemory = maxMemory
 			}
 		})
-		fmt.Println(attempt)
-		attempts = append(attempts, attempt)
+		//fmt.Println(attempt)
+		*currentAttempts = append(*currentAttempts, attempt)
 	})
+	wg.Done()
+}
 
-	retChan <- attempts
+func done(doneReceived int) bool {
+	if doneReceived > 3 {
+		return true
+	}
+	return false
+}
+
+func isPageBlank(problemID string, page int) bool {
+	url := fmt.Sprintf("https://codebreaker.xyz/submissions?problem=%s&page=%d", problemID, page)
+	doc, err := goquery.NewDocument(url)
+	if err != nil {
+		log.Printf("failed to get page attempts: %v", err)
+		return true
+	}
+
+	// Check if there are no attempts on this page
+	if doc.Find(".table tbody tr").Length() == 0 {
+		return true
+	}
+	return false
+}
+
+func getLastNonBlankPage(problemID string, start, end int) (int, error) {
+	if start == end {
+		// base case
+		if isPageBlank(problemID, start) {
+			return start - 1, nil
+		} else {
+			return start, nil
+		}
+	}
+
+	mid := (start + end + 1) / 2
+	if isPageBlank(problemID, mid) {
+		return getLastNonBlankPage(problemID, start, mid-1)
+	} else {
+		return getLastNonBlankPage(problemID, mid+1, end)
+	}
 }
 
 func getAttempts(problemID string) ([]Attempt, error) {
 	var attempts []Attempt
-	page := 1
-	for {
-		retChan := make(chan []Attempt)
-		errChan := make(chan error)
-		doneChan := make(chan int)
-
-		pagesReceived := 0
-		//nilReceived := 0
-
-		fmt.Println("spawned new")
-		go getPageAttempts(page, problemID, retChan, errChan, doneChan)
-		page++
-
-		select {
-		case attemptsPage := <-retChan:
-			attempts = append(attempts, attemptsPage...)
-			pagesReceived++
-			fmt.Println("received one page")
-		case err := <-errChan:
-			fmt.Println("error")
-			return nil, err
-		case stopPage := <-doneChan:
-			if pagesReceived < stopPage-2 {
-				fmt.Println(pagesReceived)
-				fmt.Println(stopPage)
-				fmt.Println("waiting..")
-				continue
-			} else {
-				fmt.Println("done")
-				return attempts, nil
-			}
-		}
+	totalPages, err := getLastNonBlankPage(problemID, 1, 200)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get last non-blank page: %w", err)
 	}
+
+	var wg sync.WaitGroup
+	wg.Add(totalPages)
+	for i := 0; i < totalPages; i++ {
+		go getPageAttempts(i, problemID, &attempts, &wg)
+	}
+	// Wait for all goroutines to finish
+	wg.Wait()
+	return attempts, nil
 }
 
 func main() {

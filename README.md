@@ -3,6 +3,10 @@ An unofficial codebreaker.xyz API that is basically a wrapper that scrapes the w
 
 All API endpoints only accept GET requests.
 
+## Credits
+simonfalke (ryo simp)
+Canaris
+
 ## Usage
 
 ### Installation
@@ -31,13 +35,3 @@ yarn lint
 
 ## Endpoints
 Visit the root url to find out more about the endpoints.
-
-## Roadmap
-- [x] Add Swagger UI
-- [x] Add an endpoint to get user info
-- [ ] Add an endpoint to get recent submissions
-- [ ] Add an endpoint to get recent submissions of a user
-- [ ] Add an endpoint to get recent submissions of a user in a specific challenge
-- [x] Add an endpoint to get all problems
-- [x] Add an endpoint to get a problem
-- [ ] Add an endpoint to get all users (also likely not possible since rankins doesn't show everyone)

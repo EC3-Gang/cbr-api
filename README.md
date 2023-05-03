@@ -29,7 +29,7 @@ Total                       17      1045       90        55      900         69
 ### Problems
 #### `/api/getProblem`
 ##### Parameters
-- `problemid`: `string` (required)
+- `problemId`: `string` (required)
 
 #### `/api/getProblems`
 ##### Parameters
@@ -38,7 +38,7 @@ Total                       17      1045       90        55      900         69
 ### Submissions
 #### `/api/getSubmissions`
 ##### Parameters
-- `problemid`: `string` (required)
+- `problemId`: `string` (required)
 - `ac`: `bool` (default: false)
 
 ### Users
@@ -49,7 +49,7 @@ Total                       17      1045       90        55      900         69
 ### Contests
 #### `/api/getContest`
 ##### Parameters
-- `contestid`: `string` (required)
+- `contestId`: `string` (required)
 
 #### `/api/getContests`
 ##### Parameters

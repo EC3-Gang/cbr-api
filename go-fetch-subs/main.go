@@ -39,13 +39,6 @@ func getPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg 
 		return
 	}
 
-	// Check if there are no attempts on this page
-	//if doc.Find(".table tbody tr").Length() == 0 {
-	//	//retChan <- []Attempt{}
-	//}
-
-	//var attempts []Attempt
-
 	doc.Find(".table tbody tr").Each(func(i int, s *goquery.Selection) {
 		attempt := Attempt{}
 		s.Find("td").Each(func(j int, ss *goquery.Selection) {
@@ -110,13 +103,6 @@ func getPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg 
 		*currentAttempts = append(*currentAttempts, attempt)
 	})
 	wg.Done()
-}
-
-func done(doneReceived int) bool {
-	if doneReceived > 3 {
-		return true
-	}
-	return false
 }
 
 func isPageBlank(problemID string, page int) bool {

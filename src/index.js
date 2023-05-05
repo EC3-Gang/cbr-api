@@ -53,7 +53,7 @@ const registerAllRoutes = async (path) => {
 		if (file.endsWith('.js')) {
 			console.info(`Registering ${path}/${file}`);
 			const route = await import(join(process.cwd(), `./${path}/${file}`));
-			await fastify.register(route.default, { prefix: '/api' });
+			await fastify.register(route.default, { prefix: '/scraper' });
 		}
 		else {
 			await registerAllRoutes(`${path}/${file}`);

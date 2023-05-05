@@ -62,7 +62,7 @@ Total                       17      1045       90        55      900         69
 ### Installation
 ```bash
 git clone https://github.com/EC3-Gang/cbr-api.git
-cd cbr-api
+cd cbr-scraper
 yarn
 ```
 

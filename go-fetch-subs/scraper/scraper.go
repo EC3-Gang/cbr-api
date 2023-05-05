@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"log"
+	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 )
+
+var pageLimit = 100
 
 type Attempt struct {
 	ID         int       `json:"id"`
@@ -28,15 +31,28 @@ func processString(s string) string {
 	return s
 }
 
+func getUrl(url string) (*goquery.Document, error) {
+	resp, err := http.Get(url)
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+
+	return doc, err
+}
+
+func formatCBRUrl(page int, problemID string) string {
+	return fmt.Sprintf("https://codebreaker.xyz/submissions?problem=%s&page=%d", problemID, page)
+}
+
 func getPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg *sync.WaitGroup) {
-	url := fmt.Sprintf("https://codebreaker.xyz/submissions?problem=%s&page=%d", problemID, page)
-	doc, err := goquery.NewDocument(url)
+	url := formatCBRUrl(page, problemID)
+	doc, err := getUrl(url)
 	if err != nil {
 		log.Println("[!] Failed to get page attempts: %w", err)
+		return
 	}
 
 	doc.Find(".table tbody tr").Each(func(i int, s *goquery.Selection) {
 		attempt := Attempt{}
+
 		s.Find("td").Each(func(j int, ss *goquery.Selection) {
 			switch j {
 			case 0:
@@ -101,9 +117,9 @@ func getPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg 
 	wg.Done()
 }
 
-func isPageBlank(problemID string, page int) bool {
-	url := fmt.Sprintf("https://codebreaker.xyz/submissions?problem=%s&page=%d", problemID, page)
-	doc, err := goquery.NewDocument(url)
+func isPageBlank(page int, problemID string) bool {
+	url := formatCBRUrl(page, problemID)
+	doc, err := getUrl(url)
 	if err != nil {
 		log.Printf("[!] Failed to get page attempts: %v", err)
 		return true
@@ -119,7 +135,7 @@ func isPageBlank(problemID string, page int) bool {
 func getLastNonBlankPage(problemID string, start, end int) (int, error) {
 	if start == end {
 		// base case
-		if isPageBlank(problemID, start) {
+		if isPageBlank(start, problemID) {
 			return start - 1, nil
 		} else {
 			return start, nil
@@ -127,7 +143,7 @@ func getLastNonBlankPage(problemID string, start, end int) (int, error) {
 	}
 
 	mid := (start + end + 1) / 2
-	if isPageBlank(problemID, mid) {
+	if isPageBlank(mid, problemID) {
 		return getLastNonBlankPage(problemID, start, mid-1)
 	} else {
 		return getLastNonBlankPage(problemID, mid+1, end)
@@ -141,8 +157,9 @@ func GetAttempts(problemID string) ([]Attempt, error) {
 		return nil, fmt.Errorf("failed to get last non-blank page: %w", err)
 	}
 
-	if totalPages > 30 {
-		totalPages = 30
+	// Limit to 30 pages
+	if totalPages > pageLimit {
+		totalPages = pageLimit
 	}
 
 	var wg sync.WaitGroup

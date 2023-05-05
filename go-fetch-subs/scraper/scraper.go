@@ -42,17 +42,12 @@ func formatCBRUrl(page int, problemID string) string {
 	return fmt.Sprintf("https://codebreaker.xyz/submissions?problem=%s&page=%d", problemID, page)
 }
 
-func getPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg *sync.WaitGroup) {
-	url := formatCBRUrl(page, problemID)
-	doc, err := getUrl(url)
-	if err != nil {
-		log.Println("[!] Failed to get page attempts: %w", err)
-		return
-	}
-
+func parseAttempts(doc *goquery.Document) []Attempt {
+	var attempts []Attempt
 	doc.Find(".table tbody tr").Each(func(i int, s *goquery.Selection) {
 		attempt := Attempt{}
 
+		err := error(nil)
 		s.Find("td").Each(func(j int, ss *goquery.Selection) {
 			switch j {
 			case 0:
@@ -103,17 +98,43 @@ func getPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg 
 				maxMemory := 0.0
 				if maxMemoryStr != "N/A" {
 					maxMemory, err = strconv.ParseFloat(maxMemoryStr, 64)
+					if err != nil {
+						log.Printf("[!] Failed to parse max memory on attempt %d: %v", i, err)
+					}
 				} else {
 					maxMemory = -1.0
 				}
-				if err != nil {
-					log.Printf("[!] Failed to parse max memory on attempt %d: %v", i, err)
-				}
 				attempt.MaxMemory = maxMemory
 			}
+
+			attempts = append(attempts, attempt)
 		})
-		*currentAttempts = append(*currentAttempts, attempt)
 	})
+	return attempts
+}
+
+func GetSinglePageAttempts(page int, problemID string) *[]Attempt {
+	url := formatCBRUrl(page, problemID)
+	doc, err := getUrl(url)
+	if err != nil {
+		log.Println("[!] Failed to get page attempts: %w", err)
+		return nil
+	}
+
+	attempts := parseAttempts(doc)
+	return &attempts
+}
+
+func GetPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg *sync.WaitGroup) {
+	url := formatCBRUrl(page, problemID)
+	doc, err := getUrl(url)
+	if err != nil {
+		log.Println("[!] Failed to get page attempts: %w", err)
+		return
+	}
+
+	attempts := parseAttempts(doc)
+	*currentAttempts = append(*currentAttempts, attempts...)
 	wg.Done()
 }
 
@@ -165,7 +186,7 @@ func GetAttempts(problemID string) ([]Attempt, error) {
 	var wg sync.WaitGroup
 	wg.Add(totalPages)
 	for i := 1; i <= totalPages; i++ {
-		go getPageAttempts(i, problemID, &attempts, &wg)
+		go GetPageAttempts(i, problemID, &attempts, &wg)
 	}
 
 	wg.Wait()

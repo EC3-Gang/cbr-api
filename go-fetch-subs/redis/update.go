@@ -2,7 +2,6 @@ package redis
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/EC3-Gang/cbr-api/scraper"
 	"github.com/EC3-Gang/cbr-api/types"
 	"io"
@@ -38,13 +37,12 @@ func getAllProblems() (*[]types.Problem, error) {
 }
 
 func updateProblemCache(r Client, problemID string, wg *sync.WaitGroup, num int) {
-	fmt.Println("Updating problem", problemID, num)
+	log.Println("Updating problem", problemID, num)
 	if checkProblemCached(r, problemID) {
-		fmt.Printf("[*] Problem %v is already cached\n", problemID)
+		log.Printf("[*] Problem %v is already cached\n", problemID)
 		GetAttemptsFromCache(r, problemID)
 	} else {
 		attempts, err := scraper.GetAttempts(problemID)
-		fmt.Println(problemID)
 		if err != nil {
 			log.Printf("[!] Failed to get attempts in cache updating process: %v\n[!] Problem ID: %v\n", err, problemID)
 		}
@@ -64,10 +62,13 @@ func updateAllProblemsCache(r Client) {
 
 	var wg sync.WaitGroup
 	wg.Add(len(*problems))
-	fmt.Println("Updating all problems in cache", len(*problems))
+	log.Println("[*] Updating all problems in cache", len(*problems))
 	for i, problem := range *problems {
 		go updateProblemCache(r, problem.ProblemID, &wg, i)
 	}
+
+	wg.Wait()
+	log.Println("[*] Done updating all problems in cache")
 }
 
 func PeriodicallyUpdate(r Client) {

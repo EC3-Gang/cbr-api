@@ -42,6 +42,9 @@ func updateProblemCache(r Client, problemID string) {
 		GetAttemptsFromCache(r, problemID)
 	} else {
 		attempts, err := scraper.GetAttempts(problemID)
+		fmt.Println(problemID)
+		fmt.Println("[*] Got attempts from scraper", attempts)
+
 		if err != nil {
 			log.Printf("[!] Failed to get attempts in cache updating process: %v\n[!] Problem ID: %v\n", err, problemID)
 		}

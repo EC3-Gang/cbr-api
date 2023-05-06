@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -36,7 +37,8 @@ func getAllProblems() (*[]types.Problem, error) {
 	return &problems, nil
 }
 
-func updateProblemCache(r Client, problemID string) {
+func updateProblemCache(r Client, problemID string, wg *sync.WaitGroup, num int) {
+	fmt.Println("Updating problem", problemID, num)
 	if checkProblemCached(r, problemID) {
 		fmt.Printf("[*] Problem %v is already cached\n", problemID)
 		GetAttemptsFromCache(r, problemID)
@@ -49,6 +51,8 @@ func updateProblemCache(r Client, problemID string) {
 
 		cacheProblem(r, problemID, &attempts)
 	}
+
+	wg.Done()
 }
 
 func updateAllProblemsCache(r Client) {
@@ -58,9 +62,11 @@ func updateAllProblemsCache(r Client) {
 		return
 	}
 
-	for _, problem := range *problems {
-		fmt.Println(problem.ProblemID)
-		go updateProblemCache(r, problem.ProblemID)
+	var wg sync.WaitGroup
+	wg.Add(len(*problems))
+	fmt.Println("Updating all problems in cache", len(*problems))
+	for i, problem := range *problems {
+		go updateProblemCache(r, problem.ProblemID, &wg, i)
 	}
 }
 

@@ -2,6 +2,7 @@ package redis
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/EC3-Gang/cbr-api/scraper"
 	"github.com/EC3-Gang/cbr-api/types"
 	"io"
@@ -26,6 +27,7 @@ func getAllProblems() (*[]types.Problem, error) {
 
 	// Unmarshal JSON response into slice of Problem structs
 	var problems []types.Problem
+	fmt.Println(resp.Body)
 	err = json.NewDecoder(resp.Body).Decode(&problems)
 	if err != nil {
 		log.Println("[!] Failed to decode JSON response: %w", err)

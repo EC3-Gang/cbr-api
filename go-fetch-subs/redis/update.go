@@ -48,7 +48,6 @@ func updateProblemCache(r Client, problemID string) {
 		}
 
 		cacheProblem(r, problemID, &attempts)
-		addProblem(r, problemID)
 	}
 }
 

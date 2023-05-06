@@ -5,15 +5,15 @@ import (
 	"github.com/EC3-Gang/cbr-api/types"
 )
 
-func cacheProblem(r RedisClient, problemID string, attempts *[]types.Attempt) {
+func cacheProblem(r Client, problemID string, attempts *[]types.Attempt) {
 	storeAttempts(r, problemID, attempts)
 }
 
-func getCachedProblem(r RedisClient, problemID string) *[]types.Attempt {
+func getCachedProblem(r Client, problemID string) *[]types.Attempt {
 	return getAttempts(r, problemID)
 }
 
-func GetAttemptsFromCache(r RedisClient, name string) *[]types.Attempt {
+func GetAttemptsFromCache(r Client, name string) *[]types.Attempt {
 	cached := *getCachedProblem(r, name)
 
 	cachedSet := make(types.Set)

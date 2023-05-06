@@ -9,12 +9,12 @@ import (
 	"log"
 )
 
-type RedisClient struct {
+type Client struct {
 	client *redis.Client
 	ctx    context.Context
 }
 
-func test(r RedisClient) {
+func test(r Client) {
 	err := r.client.Set(r.ctx, "foo", "bar", 0).Err()
 	if err != nil {
 		log.Println("[!] Failed to set foo: %w", err)
@@ -27,7 +27,7 @@ func test(r RedisClient) {
 	fmt.Println("foo", val)
 }
 
-func getAllData(r RedisClient) {
+func getAllData(r Client) {
 	keys, err := r.client.Keys(r.ctx, "*").Result()
 	if err != nil {
 		log.Println("[!] Failed to get keys: %w", err)
@@ -42,14 +42,14 @@ func getAllData(r RedisClient) {
 	}
 }
 
-func storeAttempts(r RedisClient, name string, attempts *[]types.Attempt) {
+func storeAttempts(r Client, name string, attempts *[]types.Attempt) {
 	err := r.client.Set(r.ctx, name, *attempts, 0).Err()
 	if err != nil {
 		log.Println("[!] Failed to set attempts: %w", err)
 	}
 }
 
-func getAttempts(r RedisClient, name string) *[]types.Attempt {
+func getAttempts(r Client, name string) *[]types.Attempt {
 	val, err := r.client.Get(r.ctx, name).Result()
 	if err != nil {
 		log.Println("[!] Failed to get attempts: %w", err)
@@ -63,18 +63,18 @@ func getAttempts(r RedisClient, name string) *[]types.Attempt {
 	return &attempts
 }
 
-func addProblem(r RedisClient, problemID string) {
+func addProblem(r Client, problemID string) {
 	err := r.client.SAdd(r.ctx, "problems", problemID).Err()
 	if err != nil {
 		log.Println("[!] Failed to add problem: %w", err)
 	}
 }
 
-func checkProblemCached(r RedisClient, problemID string) bool {
+func checkProblemCached(r Client, problemID string) bool {
 	return r.client.SIsMember(r.ctx, "problems", problemID).Val()
 }
 
-func NewClient(host string, port int) RedisClient {
+func NewClient(host string, port int) Client {
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", host, port),
 		Password: "",
@@ -83,5 +83,5 @@ func NewClient(host string, port int) RedisClient {
 
 	ctx := context.Background()
 
-	return RedisClient{client: client, ctx: ctx}
+	return Client{client: client, ctx: ctx}
 }

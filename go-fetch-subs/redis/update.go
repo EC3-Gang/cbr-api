@@ -10,12 +10,12 @@ import (
 	"time"
 )
 
-func getAllProblems() *[]types.Problem {
+func getAllProblems() (*[]types.Problem, error) {
 	// Send HTTP GET request to API endpoint
 	resp, err := http.Get("http://localhost:3000/api/getProblems")
 	if err != nil {
 		log.Println("[!] Failed to send GET request to API endpoint: %w", err)
-		return nil
+		return nil, err
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
@@ -29,13 +29,13 @@ func getAllProblems() *[]types.Problem {
 	err = json.NewDecoder(resp.Body).Decode(&problems)
 	if err != nil {
 		log.Println("[!] Failed to decode JSON response: %w", err)
-		return nil
+		return nil, err
 	}
 
-	return &problems
+	return &problems, nil
 }
 
-func updateProblemCache(r RedisClient, problemID string) {
+func updateProblemCache(r Client, problemID string) {
 	if checkProblemCached(r, problemID) {
 		GetAttemptsFromCache(r, problemID)
 	} else {
@@ -49,15 +49,19 @@ func updateProblemCache(r RedisClient, problemID string) {
 	}
 }
 
-func updateAllProblemsCache(r RedisClient) {
-	problems := getAllProblems()
+func updateAllProblemsCache(r Client) {
+	problems, err := getAllProblems()
+	if err != nil {
+		log.Printf("[!] Failed to get all problems in cache updating process: %v\n", err)
+		return
+	}
 
 	for _, problem := range *problems {
 		updateProblemCache(r, problem.ProblemID)
 	}
 }
 
-func PeriodicallyUpdate(r RedisClient) {
+func PeriodicallyUpdate(r Client) {
 	updateAllProblemsCache(r)
 
 	ticker := time.NewTicker(10 * time.Minute)

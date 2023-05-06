@@ -172,9 +172,19 @@ func getLastNonBlankPage(problemID string, start, end int) (int, error) {
 
 	mid := start + (end-start)/2
 	if !isPageBlank(mid, problemID) {
-		return getLastNonBlankPage(problemID, mid, end)
+		// check if the range is getting smaller before making the recursive call
+		if mid < end {
+			return getLastNonBlankPage(problemID, mid, end)
+		} else {
+			return mid, nil
+		}
 	} else {
-		return getLastNonBlankPage(problemID, start, mid-1)
+		// check if the range is getting smaller before making the recursive call
+		if mid > start {
+			return getLastNonBlankPage(problemID, start, mid-1)
+		} else {
+			return start + 1, nil
+		}
 	}
 }
 

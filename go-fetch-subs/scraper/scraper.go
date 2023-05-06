@@ -120,8 +120,7 @@ func GetPageAttempts(page int, problemID string, currentAttempts *[]types.Attemp
 		return
 	}
 
-	var attempts []types.Attempt
-	parseAttempts(doc, &attempts)
+	parseAttempts(doc, currentAttempts)
 	wg.Done()
 }
 

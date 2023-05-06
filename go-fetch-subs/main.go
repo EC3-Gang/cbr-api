@@ -3,15 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/EC3-Gang/cbr-api/redis"
+	"github.com/EC3-Gang/cbr-api/scraper"
 	"log"
 	"net/http"
 )
 
 func main() {
-	client := redis.NewClient("localhost", 6379)
+	//client := redis.NewClient("localhost", 6379)
 
-	go redis.PeriodicallyUpdate(client)
+	//go redis.PeriodicallyUpdate(client)
 
 	http.HandleFunc("/attempts", func(w http.ResponseWriter, r *http.Request) {
 		problemID := r.URL.Query().Get("problem")
@@ -20,11 +20,11 @@ func main() {
 			return
 		}
 
-		attempts := redis.GetAttemptsFromCache(client, problemID)
-		//if err != nil {
-		//	http.Error(w, fmt.Sprintf("Failed to get attempts: %v", err), http.StatusInternalServerError)
-		//	return
-		//}
+		attempts, err := scraper.GetAttempts(problemID)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to get attempts: %v", err), http.StatusInternalServerError)
+			return
+		}
 
 		// Encode attempts as JSON and write to response writer
 		w.Header().Set("Content-Type", "application/json")

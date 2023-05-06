@@ -25,13 +25,11 @@ type Attempt struct {
 	MaxMemory  float64   `json:"max_memory"`
 }
 
-type AttemptList []Attempt
-
-func (a *AttemptList) MarshalBinary() ([]byte, error) {
+func (a *Attempt) MarshalBinary() ([]byte, error) {
 	return json.Marshal(a)
 }
 
-func (a *AttemptList) UnmarshalBinary(data []byte) error {
+func (a *Attempt) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, a)
 }
 

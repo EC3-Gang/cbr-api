@@ -120,6 +120,7 @@ func GetPageAttempts(page int, problemID string, currentAttempts *[]types.Attemp
 		return
 	}
 
+	log.Printf("Parsing page %v of problem %v", page, problemID)
 	parseAttempts(doc, currentAttempts)
 	wg.Done()
 }

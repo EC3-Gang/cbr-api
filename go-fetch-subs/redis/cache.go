@@ -15,6 +15,7 @@ func getCachedProblem(r Client, problemID string) *[]types.Attempt {
 }
 
 func GetAttemptsFromCache(r Client, name string) *[]types.Attempt {
+	fmt.Println("Getting attempts from cache", name)
 	cached := *getCachedProblem(r, name)
 
 	cachedSet := make(types.Set)

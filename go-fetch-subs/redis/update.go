@@ -60,7 +60,7 @@ func updateAllProblemsCache(r Client) {
 
 	for _, problem := range *problems {
 		fmt.Println(problem.ProblemID)
-		updateProblemCache(r, problem.ProblemID)
+		go updateProblemCache(r, problem.ProblemID)
 	}
 }
 

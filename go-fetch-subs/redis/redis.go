@@ -42,8 +42,13 @@ func getAllData(r Client) {
 	}
 }
 
-func storeAttempts(r Client, name string, attempts *[]types.Attempt) {
-	err := r.client.Set(r.ctx, name, *attempts, 0).Err()
+func storeAttempts(r Client, name string, attempts *types.AttemptList) {
+	marshalledAttempts, err := attempts.MarshalBinary()
+	if err != nil {
+		log.Printf("[!] Failed to marshal attempts: %v", err)
+	}
+
+	err = r.client.Set(r.ctx, name, marshalledAttempts, 0).Err()
 	if err != nil {
 		log.Printf("[!] Failed to set attempts: %v", err)
 	}

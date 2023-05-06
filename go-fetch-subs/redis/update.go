@@ -33,8 +33,6 @@ func getAllProblems() (*[]types.Problem, error) {
 		return nil, err
 	}
 
-	fmt.Println(problems)
-
 	return &problems, nil
 }
 
@@ -61,6 +59,7 @@ func updateAllProblemsCache(r Client) {
 	}
 
 	for _, problem := range *problems {
+		fmt.Println(problem.ProblemID)
 		updateProblemCache(r, problem.ProblemID)
 	}
 }

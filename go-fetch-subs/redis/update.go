@@ -49,8 +49,6 @@ func updateProblemCache(r Client, problemID string, num int) {
 
 		cacheProblem(r, problemID, &attempts)
 	}
-
-	wg.Done()
 }
 
 func updateAllProblemsCache(r Client) {

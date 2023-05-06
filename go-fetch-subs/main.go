@@ -34,6 +34,6 @@ func main() {
 		}
 	})
 
-	println("[*] Go server started on port 3001")
-	log.Fatal(http.ListenAndServe(":3001", nil))
+	println("[*] Go server started on port 3002")
+	log.Fatal(http.ListenAndServe(":3002", nil))
 }

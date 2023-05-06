@@ -1,6 +1,9 @@
 package types
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Problem struct {
 	ProblemID string   `json:"problemId"`
@@ -20,6 +23,16 @@ type Attempt struct {
 	Language   string    `json:"language"`
 	MaxTime    float64   `json:"max_time"`
 	MaxMemory  float64   `json:"max_memory"`
+}
+
+type AttemptList []Attempt
+
+func (a *AttemptList) MarshalBinary() ([]byte, error) {
+	return json.Marshal(a)
+}
+
+func (a *AttemptList) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, a)
 }
 
 type Set map[interface{}]bool

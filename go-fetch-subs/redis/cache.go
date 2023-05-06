@@ -3,10 +3,13 @@ package redis
 import (
 	"github.com/EC3-Gang/cbr-api/scraper"
 	"github.com/EC3-Gang/cbr-api/types"
+	"log"
 )
 
 func cacheProblem(r Client, problemID string, attempts *[]types.Attempt) {
-	storeAttempts(r, problemID, attempts)
+	log.Printf("[*] Caching problem %s", problemID)
+	storeAttempts(r, problemID, (*types.AttemptList)(attempts))
+	addProblem(r, problemID)
 }
 
 func getCachedProblem(r Client, problemID string) *[]types.Attempt {
@@ -14,32 +17,43 @@ func getCachedProblem(r Client, problemID string) *[]types.Attempt {
 }
 
 func GetAttemptsFromCache(r Client, name string) *[]types.Attempt {
-	cached := *getCachedProblem(r, name)
+	if checkProblemCached(r, name) {
+		cached := *getCachedProblem(r, name)
 
-	cachedSet := make(types.Set)
-	for _, attempt := range cached {
-		cachedSet.Push(attempt)
-	}
-
-	var allAttempts []types.Attempt
-
-	for page := 1; ; page++ {
-		newAttempts := scraper.GetSinglePageAttempts(page, name)
-		if newAttempts == nil {
-			break
-		}
-
-		for _, attempt := range *newAttempts {
-			if cachedSet[attempt] {
-				return &allAttempts
-			}
-
-			allAttempts = append(allAttempts, attempt)
+		cachedSet := make(types.Set)
+		for _, attempt := range cached {
 			cachedSet.Push(attempt)
 		}
+
+		allAttempts := cached
+
+		for page := 1; ; page++ {
+			newAttempts := scraper.GetSinglePageAttempts(page, name)
+			if newAttempts == nil {
+				break
+			}
+
+			for _, attempt := range *newAttempts {
+				if cachedSet[attempt] {
+					return &allAttempts
+				}
+
+				allAttempts = append(allAttempts, attempt)
+				cachedSet.Push(attempt)
+			}
+		}
+
+		cacheProblem(r, name, &allAttempts)
+
+		return &allAttempts
+	} else {
+		attempts, err := scraper.GetAttempts(name)
+		if err != nil {
+			log.Printf("[!] Failed to get attempts: %v in cache function", err)
+			return nil
+		}
+
+		cacheProblem(r, name, &attempts)
+		return &attempts
 	}
-
-	cacheProblem(r, name, &allAttempts)
-
-	return &allAttempts
 }

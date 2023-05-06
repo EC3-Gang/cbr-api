@@ -6,7 +6,7 @@ import (
 )
 
 func cacheProblem(r Client, problemID string, attempts *[]types.Attempt) {
-	storeAttempts(r, problemID, attempts)
+	storeAttempts(r, problemID, (*types.AttemptList)(attempts))
 }
 
 func getCachedProblem(r Client, problemID string) *[]types.Attempt {

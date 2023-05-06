@@ -167,6 +167,7 @@ func GetAttempts(problemID string) ([]types.Attempt, error) {
 
 	var wg sync.WaitGroup
 	wg.Add(totalPages)
+	log.Printf("Problem %v has otal pages: %v", problemID, totalPages)
 	for i := 1; i <= totalPages; i++ {
 		go GetPageAttempts(i, problemID, &attempts, &wg)
 	}

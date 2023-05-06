@@ -170,10 +170,7 @@ func getLastNonBlankPage(problemID string, start, end int) (int, error) {
 		}
 	}
 
-	mid := start + (end-start)/2
-	if mid%2 == 0 {
-		mid++
-	}
+	mid := (start + end + 1) / 2
 	if !isPageBlank(mid, problemID) {
 		if mid < end {
 			return getLastNonBlankPage(problemID, mid, end)

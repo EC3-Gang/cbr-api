@@ -161,6 +161,7 @@ func isPageBlank(page int, problemID string) bool {
 //}
 
 func getLastNonBlankPage(problemID string, start, end int) (int, error) {
+	log.Printf("Getting last non-blank page for problem %v: start %v end %v", problemID, start, end)
 	if start == end {
 		if !isPageBlank(start, problemID) {
 			return start, nil

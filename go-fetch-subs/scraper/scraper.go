@@ -47,6 +47,7 @@ func parseAttempts(doc *goquery.Document, currentAttempts *[]types.Attempt) {
 				attempt.ID = id
 			case 1:
 				submissionStr := ss.Text()
+				submissionStr = strings.TrimSpace(submissionStr)
 				submission, err := time.Parse("2006-01-02 15:04:05", submissionStr)
 				if err != nil {
 					log.Printf("[!] Failed to parse submission time on attempt %d: %v", i, err)
@@ -140,22 +141,39 @@ func isPageBlank(page int, problemID string) bool {
 	return false
 }
 
+//func getLastNonBlankPage(problemID string, start, end int) (int, error) {
+//	log.Printf("Getting last non-blank page for problem %v: start %v end %v", problemID, start, end)
+//	if start == end {
+//		// base case
+//		if isPageBlank(start, problemID) {
+//			return start - 1, nil
+//		} else {
+//			return start, nil
+//		}
+//	}
+//
+//	mid := (start + end + 2) / 2
+//	if isPageBlank(mid, problemID) {
+//		return getLastNonBlankPage(problemID, start, mid-1)
+//	} else {
+//		return getLastNonBlankPage(problemID, mid+1, end)
+//	}
+//}
+
 func getLastNonBlankPage(problemID string, start, end int) (int, error) {
-	log.Printf("Getting last non-blank page for problem %v: start %v end %v", problemID, start, end)
 	if start == end {
-		// base case
-		if isPageBlank(start, problemID) {
-			return start - 1, nil
-		} else {
+		if !isPageBlank(start, problemID) {
 			return start, nil
+		} else {
+			return start + 1, nil
 		}
 	}
 
-	mid := (start + end + 2) / 2
-	if isPageBlank(mid, problemID) {
-		return getLastNonBlankPage(problemID, start, mid-1)
+	mid := start + (end-start)/2
+	if !isPageBlank(mid, problemID) {
+		return getLastNonBlankPage(problemID, mid, end)
 	} else {
-		return getLastNonBlankPage(problemID, mid+1, end)
+		return getLastNonBlankPage(problemID, start, mid-1)
 	}
 }
 

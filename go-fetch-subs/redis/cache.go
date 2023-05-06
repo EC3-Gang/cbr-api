@@ -7,6 +7,7 @@ import (
 )
 
 func cacheProblem(r Client, problemID string, attempts *[]types.Attempt) {
+	log.Printf("[*] Caching problem %s", problemID)
 	storeAttempts(r, problemID, (*types.AttemptList)(attempts))
 	addProblem(r, problemID)
 }

@@ -33,6 +33,8 @@ func getAllProblems() (*[]types.Problem, error) {
 		return nil, err
 	}
 
+	fmt.Println(problems)
+
 	return &problems, nil
 }
 

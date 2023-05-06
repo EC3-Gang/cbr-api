@@ -105,7 +105,7 @@ func GetSinglePageAttempts(page int, problemID string) *[]types.Attempt {
 	url := formatCBRUrl(page, problemID)
 	doc, err := getUrl(url)
 	if err != nil {
-		log.Println("[!] Failed to get page attempts: %w", err)
+		log.Printf("[!] Failed to get page attempts: %v", err)
 		return nil
 	}
 
@@ -117,7 +117,7 @@ func GetPageAttempts(page int, problemID string, currentAttempts *[]types.Attemp
 	url := formatCBRUrl(page, problemID)
 	doc, err := getUrl(url)
 	if err != nil {
-		log.Println("[!] Failed to get page attempts: %w", err)
+		log.Printf("[!] Failed to get page attempts: %v", err)
 		return
 	}
 

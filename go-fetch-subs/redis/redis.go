@@ -17,12 +17,12 @@ type Client struct {
 func test(r Client) {
 	err := r.client.Set(r.ctx, "foo", "bar", 0).Err()
 	if err != nil {
-		log.Println("[!] Failed to set foo: %w", err)
+		log.Printf("[!] Failed to set foo: %v", err)
 	}
 
 	val, err := r.client.Get(r.ctx, "foo").Result()
 	if err != nil {
-		log.Println("[!] Failed to get foo: %w", err)
+		log.Printf("[!] Failed to get foo: %v", err)
 	}
 	fmt.Println("foo", val)
 }
@@ -30,7 +30,7 @@ func test(r Client) {
 func getAllData(r Client) {
 	keys, err := r.client.Keys(r.ctx, "*").Result()
 	if err != nil {
-		log.Println("[!] Failed to get keys: %w", err)
+		log.Printf("[!] Failed to get keys: %v", err)
 	}
 
 	for _, key := range keys {
@@ -45,20 +45,20 @@ func getAllData(r Client) {
 func storeAttempts(r Client, name string, attempts *[]types.Attempt) {
 	err := r.client.Set(r.ctx, name, *attempts, 0).Err()
 	if err != nil {
-		log.Println("[!] Failed to set attempts: %w", err)
+		log.Printf("[!] Failed to set attempts: %v", err)
 	}
 }
 
 func getAttempts(r Client, name string) *[]types.Attempt {
 	val, err := r.client.Get(r.ctx, name).Result()
 	if err != nil {
-		log.Println("[!] Failed to get attempts: %w", err)
+		log.Printf("[!] Failed to get attempts: %v", err)
 	}
 	// Convert string to []scraper.Attempt
 	var attempts []types.Attempt
 	err = json.Unmarshal([]byte(val), &attempts)
 	if err != nil {
-		log.Println("[!] Failed to unmarshal attempts: %w", err)
+		log.Printf("[!] Failed to unmarshal attempts: %v", err)
 	}
 	return &attempts
 }
@@ -66,7 +66,7 @@ func getAttempts(r Client, name string) *[]types.Attempt {
 func addProblem(r Client, problemID string) {
 	err := r.client.SAdd(r.ctx, "problems", problemID).Err()
 	if err != nil {
-		log.Println("[!] Failed to add problem: %w", err)
+		log.Printf("[!] Failed to add problem: %v", err)
 	}
 }
 

@@ -76,6 +76,7 @@ func addProblem(r Client, problemID string) {
 }
 
 func checkProblemCached(r Client, problemID string) bool {
+	fmt.Println(r.client.SIsMember(r.ctx, "problems", problemID).Val())
 	return r.client.SIsMember(r.ctx, "problems", problemID).Val()
 }
 

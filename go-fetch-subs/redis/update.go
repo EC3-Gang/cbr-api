@@ -42,6 +42,7 @@ func updateProblemCache(r Client, problemID string, wg *sync.WaitGroup, num int)
 		log.Printf("[*] Problem %v is already cached\n", problemID)
 		GetAttemptsFromCache(r, problemID)
 	} else {
+		log.Println("[*] Problem", problemID, "is not cached")
 		attempts, err := scraper.GetAttempts(problemID)
 		if err != nil {
 			log.Printf("[!] Failed to get attempts in cache updating process: %v\n[!] Problem ID: %v\n", err, problemID)

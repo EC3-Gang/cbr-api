@@ -2,6 +2,7 @@ package redis
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/EC3-Gang/cbr-api/scraper"
 	"github.com/EC3-Gang/cbr-api/types"
 	"io"
@@ -37,6 +38,7 @@ func getAllProblems() (*[]types.Problem, error) {
 
 func updateProblemCache(r Client, problemID string) {
 	if checkProblemCached(r, problemID) {
+		fmt.Printf("[*] Problem %v is already cached\n", problemID)
 		GetAttemptsFromCache(r, problemID)
 	} else {
 		attempts, err := scraper.GetAttempts(problemID)

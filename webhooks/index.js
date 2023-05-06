@@ -18,7 +18,7 @@ app.post('/github-webhook', (req, res) => {
 		else {
 			console.log(`Git pull completed: ${stdout}`);
 			// eslint-disable-next-line no-shadow
-			exec('cd ../. && yarn install && nohup pm2 restart scraper', (error, stdout, stderr) => {
+			exec('cd ../. && yarn install && nohup pm2 restart api', (error, stdout, stderr) => {
 				if (error) {
 					console.error(`Error executing yarn install: ${error}`);
 					res.status(500).send('Error executing yarn install');

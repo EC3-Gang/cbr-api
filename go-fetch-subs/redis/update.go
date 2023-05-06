@@ -14,6 +14,7 @@ func getAllProblems() *[]types.Problem {
 	// Send HTTP GET request to API endpoint
 	resp, err := http.Get("http://localhost:3000/api/getProblems")
 	if err != nil {
+		log.Println("[!] Failed to send GET request to API endpoint: %w", err)
 		return nil
 	}
 	defer func(Body io.ReadCloser) {

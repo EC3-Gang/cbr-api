@@ -28,6 +28,7 @@ func getAllProblems() *[]types.Problem {
 	var problems []types.Problem
 	err = json.NewDecoder(resp.Body).Decode(&problems)
 	if err != nil {
+		log.Println("[!] Failed to decode JSON response: %w", err)
 		return nil
 	}
 

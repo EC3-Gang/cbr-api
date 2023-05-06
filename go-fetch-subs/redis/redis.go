@@ -4,18 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/EC3-Gang/cbr-api/types"
 	"github.com/redis/go-redis/v9"
 	"log"
-
-	"github.com/EC3-Gang/cbr-api/scraper"
 )
 
-type redisClient struct {
+type RedisClient struct {
 	client *redis.Client
 	ctx    context.Context
 }
 
-func test(r redisClient) {
+func test(r RedisClient) {
 	err := r.client.Set(r.ctx, "foo", "bar", 0).Err()
 	if err != nil {
 		log.Println("[!] Failed to set foo: %w", err)
@@ -28,7 +27,7 @@ func test(r redisClient) {
 	fmt.Println("foo", val)
 }
 
-func getAllData(r redisClient) {
+func getAllData(r RedisClient) {
 	keys, err := r.client.Keys(r.ctx, "*").Result()
 	if err != nil {
 		log.Println("[!] Failed to get keys: %w", err)
@@ -43,28 +42,39 @@ func getAllData(r redisClient) {
 	}
 }
 
-func storeAttempts(r redisClient, name string, attempts []scraper.Attempt) {
-	err := r.client.Set(r.ctx, name, attempts, 0).Err()
+func storeAttempts(r RedisClient, name string, attempts *[]types.Attempt) {
+	err := r.client.Set(r.ctx, name, *attempts, 0).Err()
 	if err != nil {
 		log.Println("[!] Failed to set attempts: %w", err)
 	}
 }
 
-func getAttempts(r redisClient, name string) []scraper.Attempt {
+func getAttempts(r RedisClient, name string) *[]types.Attempt {
 	val, err := r.client.Get(r.ctx, name).Result()
 	if err != nil {
 		log.Println("[!] Failed to get attempts: %w", err)
 	}
 	// Convert string to []scraper.Attempt
-	var attempts []scraper.Attempt
+	var attempts []types.Attempt
 	err = json.Unmarshal([]byte(val), &attempts)
 	if err != nil {
 		log.Println("[!] Failed to unmarshal attempts: %w", err)
 	}
-	return attempts
+	return &attempts
 }
 
-func newClient(host string, port int) redisClient {
+func addProblem(r RedisClient, problemID string) {
+	err := r.client.SAdd(r.ctx, "problems", problemID).Err()
+	if err != nil {
+		log.Println("[!] Failed to add problem: %w", err)
+	}
+}
+
+func checkProblemCached(r RedisClient, problemID string) bool {
+	return r.client.SIsMember(r.ctx, "problems", problemID).Val()
+}
+
+func NewClient(host string, port int) RedisClient {
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", host, port),
 		Password: "",
@@ -73,5 +83,5 @@ func newClient(host string, port int) redisClient {
 
 	ctx := context.Background()
 
-	return redisClient{client: client, ctx: ctx}
+	return RedisClient{client: client, ctx: ctx}
 }

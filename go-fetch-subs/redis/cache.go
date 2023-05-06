@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"fmt"
 	"github.com/EC3-Gang/cbr-api/scraper"
 	"github.com/EC3-Gang/cbr-api/types"
 )
@@ -40,6 +41,8 @@ func GetAttemptsFromCache(r Client, name string) *[]types.Attempt {
 	}
 
 	cacheProblem(r, name, &allAttempts)
+
+	fmt.Println(allAttempts)
 
 	return &allAttempts
 }

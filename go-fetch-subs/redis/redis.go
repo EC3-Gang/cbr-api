@@ -1,34 +1,40 @@
-package main
+package redis
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/EC3-Gang/cbr-api/types"
 	"github.com/redis/go-redis/v9"
 	"log"
 )
 
-func test(client *redis.Client, ctx context.Context) {
-	err := client.Set(ctx, "foo", "bar", 0).Err()
+type Client struct {
+	client *redis.Client
+	ctx    context.Context
+}
+
+func test(r Client) {
+	err := r.client.Set(r.ctx, "foo", "bar", 0).Err()
 	if err != nil {
 		log.Println("[!] Failed to set foo: %w", err)
 	}
 
-	val, err := client.Get(ctx, "foo").Result()
+	val, err := r.client.Get(r.ctx, "foo").Result()
 	if err != nil {
 		log.Println("[!] Failed to get foo: %w", err)
 	}
 	fmt.Println("foo", val)
 }
 
-func getAllData(client *redis.Client, ctx context.Context) {
-	// Get all keys and values
-	keys, err := client.Keys(ctx, "*").Result()
+func getAllData(r Client) {
+	keys, err := r.client.Keys(r.ctx, "*").Result()
 	if err != nil {
 		log.Println("[!] Failed to get keys: %w", err)
 	}
 
 	for _, key := range keys {
-		val, err := client.Get(ctx, key).Result()
+		val, err := r.client.Get(r.ctx, key).Result()
 		if err != nil {
 			panic(err)
 		}
@@ -36,14 +42,46 @@ func getAllData(client *redis.Client, ctx context.Context) {
 	}
 }
 
-func main() {
+func storeAttempts(r Client, name string, attempts *[]types.Attempt) {
+	err := r.client.Set(r.ctx, name, *attempts, 0).Err()
+	if err != nil {
+		log.Println("[!] Failed to set attempts: %w", err)
+	}
+}
+
+func getAttempts(r Client, name string) *[]types.Attempt {
+	val, err := r.client.Get(r.ctx, name).Result()
+	if err != nil {
+		log.Println("[!] Failed to get attempts: %w", err)
+	}
+	// Convert string to []scraper.Attempt
+	var attempts []types.Attempt
+	err = json.Unmarshal([]byte(val), &attempts)
+	if err != nil {
+		log.Println("[!] Failed to unmarshal attempts: %w", err)
+	}
+	return &attempts
+}
+
+func addProblem(r Client, problemID string) {
+	err := r.client.SAdd(r.ctx, "problems", problemID).Err()
+	if err != nil {
+		log.Println("[!] Failed to add problem: %w", err)
+	}
+}
+
+func checkProblemCached(r Client, problemID string) bool {
+	return r.client.SIsMember(r.ctx, "problems", problemID).Val()
+}
+
+func NewClient(host string, port int) Client {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     fmt.Sprintf("%s:%d", host, port),
 		Password: "",
 		DB:       0,
 	})
 
 	ctx := context.Background()
 
-	getAllData(client, ctx)
+	return Client{client: client, ctx: ctx}
 }

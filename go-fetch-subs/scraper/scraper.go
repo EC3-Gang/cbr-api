@@ -2,6 +2,7 @@ package scraper
 
 import (
 	"fmt"
+	"github.com/EC3-Gang/cbr-api/types"
 	"github.com/PuerkitoBio/goquery"
 	"log"
 	"net/http"
@@ -10,19 +11,6 @@ import (
 	"sync"
 	"time"
 )
-
-var pageLimit = 100
-
-type Attempt struct {
-	ID         int       `json:"id"`
-	Submission time.Time `json:"submission"`
-	Username   string    `json:"username"`
-	Problem    string    `json:"problem"`
-	Score      float64   `json:"score"`
-	Language   string    `json:"language"`
-	MaxTime    float64   `json:"max_time"`
-	MaxMemory  float64   `json:"max_memory"`
-}
 
 func processString(s string) string {
 	s = strings.ReplaceAll(s, "\n", "")
@@ -42,17 +30,12 @@ func formatCBRUrl(page int, problemID string) string {
 	return fmt.Sprintf("https://codebreaker.xyz/submissions?problem=%s&page=%d", problemID, page)
 }
 
-func getPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg *sync.WaitGroup) {
-	url := formatCBRUrl(page, problemID)
-	doc, err := getUrl(url)
-	if err != nil {
-		log.Println("[!] Failed to get page attempts: %w", err)
-		return
-	}
-
+func parseAttempts(doc *goquery.Document) []types.Attempt {
+	var attempts []types.Attempt
 	doc.Find(".table tbody tr").Each(func(i int, s *goquery.Selection) {
-		attempt := Attempt{}
+		attempt := types.Attempt{}
 
+		err := error(nil)
 		s.Find("td").Each(func(j int, ss *goquery.Selection) {
 			switch j {
 			case 0:
@@ -103,17 +86,43 @@ func getPageAttempts(page int, problemID string, currentAttempts *[]Attempt, wg 
 				maxMemory := 0.0
 				if maxMemoryStr != "N/A" {
 					maxMemory, err = strconv.ParseFloat(maxMemoryStr, 64)
+					if err != nil {
+						log.Printf("[!] Failed to parse max memory on attempt %d: %v", i, err)
+					}
 				} else {
 					maxMemory = -1.0
 				}
-				if err != nil {
-					log.Printf("[!] Failed to parse max memory on attempt %d: %v", i, err)
-				}
 				attempt.MaxMemory = maxMemory
 			}
+
+			attempts = append(attempts, attempt)
 		})
-		*currentAttempts = append(*currentAttempts, attempt)
 	})
+	return attempts
+}
+
+func GetSinglePageAttempts(page int, problemID string) *[]types.Attempt {
+	url := formatCBRUrl(page, problemID)
+	doc, err := getUrl(url)
+	if err != nil {
+		log.Println("[!] Failed to get page attempts: %w", err)
+		return nil
+	}
+
+	attempts := parseAttempts(doc)
+	return &attempts
+}
+
+func GetPageAttempts(page int, problemID string, currentAttempts *[]types.Attempt, wg *sync.WaitGroup) {
+	url := formatCBRUrl(page, problemID)
+	doc, err := getUrl(url)
+	if err != nil {
+		log.Println("[!] Failed to get page attempts: %w", err)
+		return
+	}
+
+	attempts := parseAttempts(doc)
+	*currentAttempts = append(*currentAttempts, attempts...)
 	wg.Done()
 }
 
@@ -150,22 +159,17 @@ func getLastNonBlankPage(problemID string, start, end int) (int, error) {
 	}
 }
 
-func GetAttempts(problemID string) ([]Attempt, error) {
-	var attempts []Attempt
+func GetAttempts(problemID string) ([]types.Attempt, error) {
+	var attempts []types.Attempt
 	totalPages, err := getLastNonBlankPage(problemID, 1, 200)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get last non-blank page: %w", err)
 	}
 
-	// Limit to 30 pages
-	if totalPages > pageLimit {
-		totalPages = pageLimit
-	}
-
 	var wg sync.WaitGroup
 	wg.Add(totalPages)
 	for i := 1; i <= totalPages; i++ {
-		go getPageAttempts(i, problemID, &attempts, &wg)
+		go GetPageAttempts(i, problemID, &attempts, &wg)
 	}
 
 	wg.Wait()

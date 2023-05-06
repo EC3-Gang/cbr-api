@@ -60,7 +60,7 @@ func updateAllProblemsCache(r Client) {
 
 	log.Println("[*] Updating all problems in cache", len(*problems))
 	for i, problem := range *problems {
-		go updateProblemCache(r, problem.ProblemID, i)
+		updateProblemCache(r, problem.ProblemID, i)
 	}
 
 	log.Println("[*] Done spawning all caching goroutines ---------------------------------------------------")

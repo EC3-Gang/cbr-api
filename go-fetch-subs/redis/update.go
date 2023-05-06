@@ -36,7 +36,7 @@ func getAllProblems() (*[]types.Problem, error) {
 }
 
 func updateProblemCache(r Client, problemID string, num int) {
-	log.Println("Updating problem", problemID, num)
+	log.Println("[*] Updating problem", problemID, num)
 	if checkProblemCached(r, problemID) {
 		log.Printf("[*] Problem %v is already cached\n", problemID)
 		GetAttemptsFromCache(r, problemID)
@@ -63,7 +63,7 @@ func updateAllProblemsCache(r Client) {
 		updateProblemCache(r, problem.ProblemID, i)
 	}
 
-	log.Println("[*] Done spawning all caching goroutines ---------------------------------------------------")
+	log.Println("[*] Done updating all problems -----------------------------------------------------------------")
 }
 
 func PeriodicallyUpdate(r Client) {

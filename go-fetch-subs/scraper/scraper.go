@@ -142,7 +142,6 @@ func isPageBlank(page int, problemID string) bool {
 }
 
 func getLastNonBlankPage(problemID string, start, end int) (int, error) {
-	log.Printf("Getting last non-blank page for problem %v: start %v end %v", problemID, start, end)
 	if start == end {
 		if !isPageBlank(start, problemID) {
 			return start, nil
@@ -176,7 +175,7 @@ func GetAttempts(problemID string) ([]types.Attempt, error) {
 
 	var wg sync.WaitGroup
 	wg.Add(totalPages)
-	log.Printf("Problem %v has otal pages: %v", problemID, totalPages)
+	log.Printf("[*] Problem %v has total pages: %v", problemID, totalPages)
 	for i := 1; i <= totalPages; i++ {
 		go GetPageAttempts(i, problemID, &attempts, &wg)
 	}

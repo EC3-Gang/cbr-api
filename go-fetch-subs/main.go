@@ -20,11 +20,9 @@ func main() {
 			return
 		}
 
+		log.Println("[*] Got request for problem", problemID)
+
 		attempts := redis.GetAttemptsFromCache(client, problemID)
-		//if err != nil {
-		//	http.Error(w, fmt.Sprintf("Failed to get attempts: %v", err), http.StatusInternalServerError)
-		//	return
-		//}
 
 		// Encode attempts as JSON and write to response writer
 		w.Header().Set("Content-Type", "application/json")

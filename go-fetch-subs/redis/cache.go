@@ -1,7 +1,6 @@
 package redis
 
 import (
-	"fmt"
 	"github.com/EC3-Gang/cbr-api/scraper"
 	"github.com/EC3-Gang/cbr-api/types"
 )
@@ -15,7 +14,6 @@ func getCachedProblem(r Client, problemID string) *[]types.Attempt {
 }
 
 func GetAttemptsFromCache(r Client, name string) *[]types.Attempt {
-	fmt.Println("Getting attempts from cache", name)
 	cached := *getCachedProblem(r, name)
 
 	cachedSet := make(types.Set)
@@ -23,11 +21,10 @@ func GetAttemptsFromCache(r Client, name string) *[]types.Attempt {
 		cachedSet.Push(attempt)
 	}
 
-	var allAttempts []types.Attempt
+	allAttempts := cached
 
 	for page := 1; ; page++ {
 		newAttempts := scraper.GetSinglePageAttempts(page, name)
-		fmt.Println(*newAttempts)
 		if newAttempts == nil {
 			break
 		}
@@ -43,8 +40,6 @@ func GetAttemptsFromCache(r Client, name string) *[]types.Attempt {
 	}
 
 	cacheProblem(r, name, &allAttempts)
-
-	fmt.Println(allAttempts)
 
 	return &allAttempts
 }

@@ -30,8 +30,7 @@ func formatCBRUrl(page int, problemID string) string {
 	return fmt.Sprintf("https://codebreaker.xyz/submissions?problem=%s&page=%d", problemID, page)
 }
 
-func parseAttempts(doc *goquery.Document) []types.Attempt {
-	var attempts []types.Attempt
+func parseAttempts(doc *goquery.Document, currentAttempts *[]types.Attempt) {
 	doc.Find(".table tbody tr").Each(func(i int, s *goquery.Selection) {
 		attempt := types.Attempt{}
 
@@ -95,10 +94,9 @@ func parseAttempts(doc *goquery.Document) []types.Attempt {
 				attempt.MaxMemory = maxMemory
 			}
 
-			attempts = append(attempts, attempt)
 		})
+		*currentAttempts = append(*currentAttempts, attempt)
 	})
-	return attempts
 }
 
 func GetSinglePageAttempts(page int, problemID string) *[]types.Attempt {
@@ -109,88 +107,21 @@ func GetSinglePageAttempts(page int, problemID string) *[]types.Attempt {
 		return nil
 	}
 
-	attempts := parseAttempts(doc)
+	var attempts []types.Attempt
+	parseAttempts(doc, &attempts)
 	return &attempts
 }
 
 func GetPageAttempts(page int, problemID string, currentAttempts *[]types.Attempt, wg *sync.WaitGroup) {
-	url := fmt.Sprintf("https://codebreaker.xyz/submissions?problem=%s&page=%d", problemID, page)
-	doc, err := goquery.NewDocument(url)
+	url := formatCBRUrl(page, problemID)
+	doc, err := getUrl(url)
 	if err != nil {
-		//errChan <- fmt.Errorf("failed to get page attempts: %w", err)
+		log.Printf("[!] Failed to get page attempts: %v", err)
 		return
 	}
 
-	// Check if there are no attempts on this page
-	//if doc.Find(".table tbody tr").Length() == 0 {
-	//	//retChan <- []Attempt{}
-	//}
-
-	//var attempts []Attempt
-
-	doc.Find(".table tbody tr").Each(func(i int, s *goquery.Selection) {
-		attempt := types.Attempt{}
-		s.Find("td").Each(func(j int, ss *goquery.Selection) {
-			switch j {
-			case 0:
-				idStr := ss.Text()
-				idStr = processString(idStr)
-				id, err := strconv.Atoi(idStr)
-				if err != nil {
-					log.Printf("failed to parse ID on attempt %d: %v", i, err)
-				}
-				attempt.ID = id
-			case 1:
-				submissionStr := ss.Text()
-				submission, err := time.Parse("2006-01-02 15:04:05", submissionStr)
-				if err != nil {
-					log.Printf("failed to parse submission time on attempt %d: %v", i, err)
-				}
-				attempt.Submission = submission
-			case 2:
-				attempt.Username = processString(ss.Text())
-			case 3:
-				attempt.Problem = processString(ss.Text())
-			case 4:
-				scoreStr := ss.Text()
-				scoreStr = processString(scoreStr)
-				score, err := strconv.ParseFloat(scoreStr, 64)
-				if err != nil {
-					log.Printf("failed to parse score on attempt %d: %v", i, err)
-				}
-				attempt.Score = score
-			case 5:
-				attempt.Language = processString(ss.Text())
-			case 6:
-				maxTimeStr := ss.Text()
-				maxTimeStr = processString(maxTimeStr)
-				maxTime := 0.0
-				if maxTimeStr != "N/A" {
-					maxTime, err = strconv.ParseFloat(maxTimeStr, 64)
-				} else {
-					maxTime = -1.0
-				}
-				if err != nil {
-					log.Printf("failed to parse max time on attempt %d: %v", i, err)
-				}
-				attempt.MaxTime = maxTime
-			case 7:
-				maxMemoryStr := ss.Text()
-				maxMemoryStr = processString(maxMemoryStr)
-				maxMemory := 0.0
-				if maxMemoryStr != "N/A" {
-					maxMemory, err = strconv.ParseFloat(maxMemoryStr, 64)
-				} else {
-					maxMemory = -1.0
-				}
-				if err != nil {
-					log.Printf("failed to parse max memory on attempt %d: %v", i, err)
-				}
-				attempt.MaxMemory = maxMemory
-			}
-		})
-		*currentAttempts = append(*currentAttempts, attempt)
-	})
+	var attempts []types.Attempt
+	parseAttempts(doc, &attempts)
 	wg.Done()
 }
 

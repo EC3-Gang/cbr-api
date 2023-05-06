@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"sync"
 	"time"
 )
 
@@ -36,7 +35,7 @@ func getAllProblems() (*[]types.Problem, error) {
 	return &problems, nil
 }
 
-func updateProblemCache(r Client, problemID string, wg *sync.WaitGroup, num int) {
+func updateProblemCache(r Client, problemID string, num int) {
 	log.Println("Updating problem", problemID, num)
 	if checkProblemCached(r, problemID) {
 		log.Printf("[*] Problem %v is already cached\n", problemID)
@@ -61,15 +60,12 @@ func updateAllProblemsCache(r Client) {
 		return
 	}
 
-	var wg sync.WaitGroup
-	wg.Add(len(*problems))
 	log.Println("[*] Updating all problems in cache", len(*problems))
 	for i, problem := range *problems {
-		go updateProblemCache(r, problem.ProblemID, &wg, i)
+		go updateProblemCache(r, problem.ProblemID, i)
 	}
 
-	wg.Wait()
-	log.Println("[*] Done updating all problems in cache")
+	log.Println("[*] Done spawning all caching goroutines")
 }
 
 func PeriodicallyUpdate(r Client) {

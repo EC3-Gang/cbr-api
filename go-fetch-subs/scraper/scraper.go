@@ -47,6 +47,7 @@ func parseAttempts(doc *goquery.Document, currentAttempts *[]types.Attempt) {
 				attempt.ID = id
 			case 1:
 				submissionStr := ss.Text()
+				submissionStr = strings.TrimSpace(submissionStr)
 				submission, err := time.Parse("2006-01-02 15:04:05", submissionStr)
 				if err != nil {
 					log.Printf("[!] Failed to parse submission time on attempt %d: %v", i, err)
@@ -120,6 +121,7 @@ func GetPageAttempts(page int, problemID string, currentAttempts *[]types.Attemp
 		return
 	}
 
+	log.Printf("Parsing page %v of problem %v", page, problemID)
 	parseAttempts(doc, currentAttempts)
 	wg.Done()
 }
@@ -141,19 +143,26 @@ func isPageBlank(page int, problemID string) bool {
 
 func getLastNonBlankPage(problemID string, start, end int) (int, error) {
 	if start == end {
-		// base case
-		if isPageBlank(start, problemID) {
-			return start - 1, nil
-		} else {
+		if !isPageBlank(start, problemID) {
 			return start, nil
+		} else {
+			return start + 1, nil
 		}
 	}
 
 	mid := (start + end + 1) / 2
-	if isPageBlank(mid, problemID) {
-		return getLastNonBlankPage(problemID, start, mid-1)
+	if !isPageBlank(mid, problemID) {
+		if mid < end {
+			return getLastNonBlankPage(problemID, mid, end)
+		} else {
+			return mid, nil
+		}
 	} else {
-		return getLastNonBlankPage(problemID, mid+1, end)
+		if mid > start {
+			return getLastNonBlankPage(problemID, start, mid-1)
+		} else {
+			return start + 1, nil
+		}
 	}
 }
 
@@ -166,6 +175,7 @@ func GetAttempts(problemID string) ([]types.Attempt, error) {
 
 	var wg sync.WaitGroup
 	wg.Add(totalPages)
+	log.Printf("[*] Problem %v has total pages: %v", problemID, totalPages)
 	for i := 1; i <= totalPages; i++ {
 		go GetPageAttempts(i, problemID, &attempts, &wg)
 	}

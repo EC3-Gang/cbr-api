@@ -28,8 +28,9 @@ func GetAttemptsFromCache(r Client, name string) *[]types.Attempt {
 		allAttempts := cached
 
 		for page := 1; ; page++ {
+			log.Printf("[*] Getting page %d for problem %v", page, name)
 			newAttempts := scraper.GetSinglePageAttempts(page, name)
-			if newAttempts == nil {
+			if len(*newAttempts) == 0 {
 				break
 			}
 

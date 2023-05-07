@@ -2,6 +2,7 @@ package redis
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/EC3-Gang/cbr-api/scraper"
 	"github.com/EC3-Gang/cbr-api/types"
 	"io"
@@ -71,7 +72,7 @@ func updateAllProblemsCache(r Client) {
 func PeriodicallyUpdate(r Client) {
 	updateAllProblemsCache(r)
 
-	ticker := time.NewTicker(10 * time.Minute)
+	ticker := time.NewTicker(24 * time.Hour)
 	for {
 		select {
 		case <-ticker.C:

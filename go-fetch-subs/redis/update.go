@@ -2,13 +2,16 @@ package redis
 
 import (
 	"encoding/json"
-	"fmt"
+    "fmt"
 	"github.com/EC3-Gang/cbr-api/scraper"
 	"github.com/EC3-Gang/cbr-api/types"
 	"io"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/EC3-Gang/cbr-api/scraper"
+	"github.com/EC3-Gang/cbr-api/types"
 )
 
 func getAllProblems() (*[]types.Problem, error) {

@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+
 	"github.com/EC3-Gang/cbr-api/types"
 	"github.com/redis/go-redis/v9"
-	"log"
 )
 
 type Client struct {

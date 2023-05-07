@@ -2,9 +2,7 @@ package redis
 
 import (
 	"encoding/json"
-    "fmt"
-	"github.com/EC3-Gang/cbr-api/scraper"
-	"github.com/EC3-Gang/cbr-api/types"
+	"fmt"
 	"io"
 	"log"
 	"net/http"

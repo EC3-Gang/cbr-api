@@ -6,6 +6,7 @@ All API endpoints only accept GET requests.
 ## Credits
 - [simonfalke (ryo simp)](https://github.com/simonfalke-01) (bro was crazy enough to scrape the whole site and store all submissions in his own database)
 	![](./br.png)
+Explanation for the insane number of requests - One of the functions to find the total number of submission pages had a bug that made it get stuck in an infinite recursion... The function used to be run concurrently for every problem, all 1300 of them. I then left it running for around 15 minutes, with each one sending 5 requests per second. 1300 * 15 * 60 * 5 = 5850000. Sorry admins.
 - [Canaris](https://github.com/DET171)
 
 

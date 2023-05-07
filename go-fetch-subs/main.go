@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/EC3-Gang/cbr-api/redis"
 	"log"
 	"net/http"
+
+	"github.com/EC3-Gang/cbr-api/redis"
 )
 
 func main() {

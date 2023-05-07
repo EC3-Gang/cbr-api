@@ -1,9 +1,10 @@
 package redis
 
 import (
+	"log"
+
 	"github.com/EC3-Gang/cbr-api/scraper"
 	"github.com/EC3-Gang/cbr-api/types"
-	"log"
 )
 
 func cacheProblem(r Client, problemID string, attempts *[]types.Attempt) {

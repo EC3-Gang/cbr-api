@@ -5,6 +5,7 @@ All API endpoints only accept GET requests.
 
 ## Credits
 - [simonfalke (ryo simp)](https://github.com/simonfalke-01) (bro was crazy enough to scrape the whole site and store all submissions in his own database)
+	![](./br.png)
 - [Canaris](https://github.com/DET171)
 
 

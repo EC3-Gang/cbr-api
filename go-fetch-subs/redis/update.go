@@ -2,7 +2,6 @@ package redis
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -33,8 +32,6 @@ func GetAllProblems() (*[]types.Problem, error) {
 		log.Println("[!] Failed to decode JSON response: %w", err)
 		return nil, err
 	}
-
-	fmt.Println(problems)
 
 	return &problems, nil
 }

@@ -52,6 +52,11 @@ func updateProblemCache(r Client, problemID string, num int) {
 	}
 }
 
+func updateAllAttemptsCache(r Client) {
+	log.Printf("[*] Updating all attempts in cache\n")
+	GetAllAttemptsFromCache(r)
+}
+
 func updateAllProblemsCache(r Client) {
 	problems, err := GetAllProblems()
 	if err != nil {
@@ -69,12 +74,14 @@ func updateAllProblemsCache(r Client) {
 
 func PeriodicallyUpdate(r Client) {
 	updateAllProblemsCache(r)
+	updateAllAttemptsCache(r)
 
 	ticker := time.NewTicker(24 * time.Hour)
 	for {
 		select {
 		case <-ticker.C:
 			updateAllProblemsCache(r)
+			updateAllAttemptsCache(r)
 		}
 	}
 }

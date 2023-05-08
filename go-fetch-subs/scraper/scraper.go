@@ -30,6 +30,10 @@ func formatCBRUrl(page int, problemID string) string {
 	return fmt.Sprintf("https://codebreaker.xyz/submissions?problem=%s&page=%d", problemID, page)
 }
 
+func formatCBRUrlAllAttempts(page int) string {
+	return fmt.Sprintf("https://codebreaker.xyz/submissions?page=%d", page)
+}
+
 func parseAttempts(doc *goquery.Document, currentAttempts *[]types.Attempt) {
 	doc.Find(".table tbody tr").Each(func(i int, s *goquery.Selection) {
 		attempt := types.Attempt{}
@@ -102,6 +106,19 @@ func parseAttempts(doc *goquery.Document, currentAttempts *[]types.Attempt) {
 
 func GetSinglePageAttempts(page int, problemID string) *[]types.Attempt {
 	url := formatCBRUrl(page, problemID)
+	doc, err := getUrl(url)
+	if err != nil {
+		log.Printf("[!] Failed to get page attempts: %v", err)
+		return nil
+	}
+
+	var attempts []types.Attempt
+	parseAttempts(doc, &attempts)
+	return &attempts
+}
+
+func GetSinglePageAllAttempts(page int) *[]types.Attempt {
+	url := formatCBRUrlAllAttempts(page)
 	doc, err := getUrl(url)
 	if err != nil {
 		log.Printf("[!] Failed to get page attempts: %v", err)

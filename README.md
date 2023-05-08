@@ -4,8 +4,7 @@ An unofficial codebreaker.xyz API that is basically a wrapper that scrapes the w
 All API endpoints only accept GET requests.
 
 ## Credits
-- [simonfalke (ryo simp)](https://github.com/simonfalke-01) (bro was crazy enough to scrape the whole site and store all submissions in his own database)
-	![](./br.png)
+- [simonfalke (ryo simp)](https://github.com/simonfalke-01)
 - [Canaris](https://github.com/DET171)
 
 
@@ -66,6 +65,3 @@ Navigate to `http://localhost:3000/`.
 ```bash
 yarn lint
 ```
-
-## Endpoints
-Visit the root url to find out more about the endpoints.

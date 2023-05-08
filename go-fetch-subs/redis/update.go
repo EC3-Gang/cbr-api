@@ -12,7 +12,7 @@ import (
 	"github.com/EC3-Gang/cbr-api/types"
 )
 
-func getAllProblems() (*[]types.Problem, error) {
+func GetAllProblems() (*[]types.Problem, error) {
 	// Send HTTP GET request to API endpoint
 	resp, err := http.Get("http://localhost:3000/api/getProblems")
 	if err != nil {
@@ -56,7 +56,7 @@ func updateProblemCache(r Client, problemID string, num int) {
 }
 
 func updateAllProblemsCache(r Client) {
-	problems, err := getAllProblems()
+	problems, err := GetAllProblems()
 	if err != nil {
 		log.Printf("[!] Failed to get all problems in cache updating process: %v\n", err)
 		return

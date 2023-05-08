@@ -4,10 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/EC3-Gang/cbr-api/redis"
-	"github.com/EC3-Gang/cbr-api/types"
 	"log"
 	"net/http"
-	"sort"
 )
 
 func main() {
@@ -35,25 +33,7 @@ func main() {
 	})
 
 	http.HandleFunc("/allAttempts", func(w http.ResponseWriter, r *http.Request) {
-		allProblems, err := redis.GetAllProblems()
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to get all problems: %v", err), http.StatusInternalServerError)
-			return
-		}
-
-		var allAttempts []types.Attempt
-
-		for _, problem := range *allProblems {
-			attempts := redis.GetAttemptsFromCache(client, problem.ProblemID)
-			allAttempts = append(allAttempts, *attempts...)
-		}
-
-		// sort allAttempts by ID from largest to smallest
-		// this is so that the most recent attempts are first
-
-		sort.Slice(allAttempts, func(i, j int) bool {
-			return allAttempts[i].ID > allAttempts[j].ID
-		})
+		allAttempts := redis.GetAllAttemptsFromCache(client)
 
 		// Encode attempts as JSON and write to response writer
 		w.Header().Set("Content-Type", "application/json")

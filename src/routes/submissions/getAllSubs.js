@@ -1,24 +1,9 @@
 import got from 'got';
 
 const schema = {
-	description: 'Gets all submissions for a problem',
+	description: 'Gets all submissions',
 	tags: ['submissions'],
-	summary: 'Gets all submissions for a problem',
-	// optional querystring (problem id)
-	querystring: {
-		type: 'object',
-		required: ['problemId'],
-		properties: {
-			problemId: {
-				type: 'string',
-				description: 'ID of the problem',
-			},
-			ac: {
-				type: 'boolean',
-				description: 'Whether to only get AC submissions',
-			},
-		},
-	},
+	summary: 'Gets all submissions',
 	response: {
 		200: {
 			description: 'Successful response',
@@ -65,10 +50,9 @@ const schema = {
 };
 
 export default function(fastify, opts, done) {
-	fastify.get('/getSubmissions', { schema }, async (request, reply) => {
-		const { problemId } = request.query;
+	fastify.get('/getAllSubmissions', { schema }, async (request, reply) => {
 		// get json from localhost:3002/attempts
-		const { body } = await got(`http://localhost:3002/attempts?problem=${problemId}`, {
+		const { body } = await got('http://localhost:3002/allAttempts', {
 			responseType: 'json',
 		});
 

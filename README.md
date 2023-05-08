@@ -65,6 +65,3 @@ Navigate to `http://localhost:3000/`.
 ```bash
 yarn lint
 ```
-
-## Endpoints
-Visit the root url to find out more about the endpoints.
